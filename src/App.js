@@ -3,15 +3,20 @@ import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
+  feelingLucky() {
+    window.TMIdentity.init({
+      serverUrl: 'https://dev1.identity.nonprod-tmaws.io',
+      flags: {
+        social: true
+      }
+    }).then(window.TMIdentity.login);
+  }
+
   render() {
     return (
       <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
         <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
+          <button className="btn btn-primary" onClick={this.feelingLucky}>I'm feeeeling lukcy!</button>
         </p>
       </div>
     );
