@@ -68,7 +68,14 @@ constructor(){
     console.log('i succeed' + this.state.lat + this.state.long );
     console.log('i succeed' + crd.latitude + crd.longitude );
     let self = this;
-    fetch('https://get-me-indr-backend.herokuapp.com/discovery?geoPoint=' + hashCode + '&artists=Colorado%20Rockies%20vs.%20Cincinnati%20Reds,Madonna,The%20Cranberries,Michael%20Jackson')
+    var myHeaders = new Headers();
+     myHeaders.append('Access-Control-Allow-Origin', '*');
+    fetch('http://get-me-indr-backend.herokuapp.com/discovery?geoPoint=' + hashCode + '&artists=Colorado%20Rockies%20vs.%20Cincinnati%20Reds,Madonna,The%20Cranberries,Michael%20Jackson',
+    {
+        headers: myHeaders,
+        mode: 'cors',
+        cache: 'default'
+     })
         .then(function(response) {
             if (response.status >= 400) {
                 throw new Error("Bad response from server");
