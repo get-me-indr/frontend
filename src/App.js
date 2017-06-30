@@ -114,7 +114,7 @@ constructor(){
 
   renderCards(data) {
     const { tmUserId } = this.state.user;
-    return data.map((item) => (
+    return data ? data.map((item) => (
       <Card
         key={item}
         onSwipeLeft={() => {
@@ -136,7 +136,7 @@ constructor(){
          dateTime = {item.dateTime }
          distance = {item.distance}/>
       </Card>
-    ));
+    )) : [];
   }
 
   renderContent() {
