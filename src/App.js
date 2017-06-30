@@ -72,6 +72,7 @@ constructor(){
         .then(function(response) {
             if (response.status >= 400) {
                 throw new Error("Bad response from server");
+                console.log("hello");
             }
             return response.json();
         })
