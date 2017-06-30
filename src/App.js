@@ -125,6 +125,7 @@ constructor(){
           reportSwipe({ direction: 'right', event: item, tmUserId });
         }}
         onSwipeTop={() => {
+          this.setState({ loading: true });
           reportSwipe({ direction: 'up', event: item, tmUserId });
           window.location = item.url
         }}
