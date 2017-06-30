@@ -64,8 +64,9 @@ constructor(){
   }
 
   start() {
-    const { user: { tmToken, tmUserId, fbUserId, fbToken }, hash:location } = this.state;
-    const params = { tmToken, tmUserId, fbUserId, fbToken, location };
+    console.log('this.state', this.state);
+    const { user: { tmToken, tmUserId, fbUserId, fbToken } } = this.state;
+    const params = { tmToken, tmUserId, fbUserId, fbToken };
     const esc = encodeURIComponent;
     const query = Object.keys(params)
         .map(k => esc(k) + '=' + esc(params[k]))
@@ -73,7 +74,7 @@ constructor(){
 
     fetch('http://get-me-indr-backend.herokuapp.com?'+query, params)
         .then(response => {
-          this.setState({ cardData, loading: false });
+          this.setState({ loading: false });
             if (response.status >= 400) {
                 throw new Error("Bad response from server");
             }
@@ -85,6 +86,7 @@ constructor(){
               url: evt.eventUrl || evt.url || '#',
               img: evt.imageUrl
             }));
+            this.setState({ cardData })
         });
   }
 
