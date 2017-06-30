@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500');
+@import url('https://fonts.googleapis.com/css?family=Pacifico|Roboto');
 
 body {
   margin: 0;
@@ -29,13 +29,11 @@ h1, h2 {
 }
 
 .card {
-  //background-color: white;
   background-size: cover;
   position: absolute;
   background: #F8F3F3;
   height: calc(100vh - 64px);
   width: 100%;
-  //margin: 0 auto;
   transition: box-shadow .3s;
   box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
   cursor: pointer;
@@ -65,52 +63,84 @@ h1, h2 {
 }
 
 .alert {
-  width: 45%;
-  min-height: 10%;
+  width: 100%;
+  height: calc(100vh - 64px);
   position: absolute;
-  z-index: 9999;
   opacity: 0;
-  transition: opacity .5s;
+  transition: opacity 1s;
   color: white;
   vertical-align: middle;
   line-height: 3rem;
+  z-index: -1;
+  top: 64px;
+  left: 0;
+}
+
+.alert:after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 36px;
+  font-family: 'Pacifico', sans-serif;
 }
 
 .alert-visible {
-  opacity: 1;
+  z-index: 9999;
+  animation-name: alertDisplayFade;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-out;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes alertDisplayFade {
+  0% {
+    opacity: 0;
+    z-index: 9999;
+  }
+  50% {
+    opacity: 1;
+    z-index: 9999;
+  }
+  100% {
+    opacity: 0;
+    z-index: -1;
+  }
 }
 
 .alert-right {
-  top: 64px;
-  right: 0;
-  background: green;
-  border-top-left-radius: 50px;
-  border-bottom-left-radius: 50px;
+  background: #19ab20;
+}
+
+.alert-right:after {
+  content: 'Love it';
 }
 
 .alert-left {
-  top: 64px;
-  left: 0;
-  background: red;
-  border-top-right-radius: 50px;
-  border-bottom-right-radius: 50px;
+  background: #f00;
+}
+
+.alert-left:after {
+  content: 'Bummer';
 }
 
 .alert-top {
-  background: purple;
-  border-radius: 50px;
-  transform: translate(-50%, 0);
-  margin-left: 50%;
-  top: 64px;
+  background: #d0006f;
+}
+
+.alert-top:after {
+  content: 'Get me IN';
 }
 
 .alert-bottom {
-  bottom: 0;
-  background: blue;
-  // border-top-left-radius: 50px;
-  border-radius: 50px;
-  transform: translate(-50%, 0);
-  margin-left: 50%;
+  background: #fa3;
+}
+
+.alert-bottom:after {
+  content: 'Share it';
 }
 
 .spinner {

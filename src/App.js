@@ -122,12 +122,6 @@ constructor(){
               venueCity: evt.venueCity || '',
               startLocalDate: evt.startLocalDate
             }));
-
-            cardData.push({
-              title: 'Test Event',
-              url: 'Whatever',
-              img: 'evt.imageUrl'
-            });
             this.setState({ cardData })
         })
         .catch(() => this.setState({ loading: false }));
