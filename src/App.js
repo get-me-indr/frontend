@@ -2,27 +2,61 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import GeoHash from 'latlon-geohash';
+import Header from './components/header';
+import EventCard from './components/event-card';
+import RaisedButton from 'material-ui/RaisedButton';
 import Cards, { Card } from 'react-swipe-card';
 
 class App extends Component {
 
-  constructor(){
-    super();
+constructor(){
+  super();
     this.success = this.success.bind(this);
-    this.state = {lat:0,long:0,geohash:''}
-  }
+    this.feelingLucky = this.feelingLucky.bind(this);
+    this.login = this.login.bind(this);
+    this.logout = this.logout.bind(this);
+    this.onLoginSuccess = this.onLoginSuccess.bind(this);
 
+    this.state = {
+      lat: 0,
+      long: 0,
+      geohash: '',
+      user: {
+        status: 'not_connected'
+      }
+    };
+  }
 
   feelingLucky() {
     window.TMIdentity.init({
-      serverUrl: 'https://dev1.identity.nonprod-tmaws.io',
-      flags: {
-        social: true
-      }
-    }).then(window.TMIdentity.login);
+        serverUrl: 'https://identity.ticketmaster.com',
+        flags: {
+          social: true
+        }
+      })
+      .then(this.login);
   }
 
-  success(pos){
+  login() {
+    window.TMIdentity.login()
+      .then(this.onLoginSuccess)
+  }
+
+  logout() {
+    window.TMIdentity.logout();
+    this.setState({ user: { status: 'not_connected' } });
+  }
+
+  onLoginSuccess(user) {
+    this.setState({ user });
+  }
+
+  isUserLoggedIn() {
+    const { user } = this.state;
+    return user.status === 'connected';
+  }
+
+  success(pos) {
     let crd = pos.coords;
 
     let hashCode = GeoHash.encode(crd.latitude,crd.longitude);
@@ -31,14 +65,13 @@ class App extends Component {
     console.log('i succeed' + this.state.lat + this.state.long );
     console.log('i succeed' + crd.latitude + crd.longitude );
   }
-  error(){
-    console.log('I errored');
-  }
 
+  error() {
+    console.log('I errored');
+   }
 
   getLatLong(){
     navigator.geolocation.getCurrentPosition(this.success, this.error, {enableHighAccuracy: true,  timeout: 5000,  maximumAge: 0 });
-
   }
 
   componentDidMount() {
@@ -51,34 +84,41 @@ class App extends Component {
         key={item}
         onSwipeLeft={() => console.log('swipe left')}
         onSwipeRight={() => console.log('swipe right')}
-      >
-        <div className="card">
-          <img className="card-img-top" src="https://unsplash.it/300/300?random" alt="Card image cap" />
-          <div className="card-block">
-            <h4 className="card-title">{item}</h4>
-            <p className="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            <a href="#" className="btn btn-primary">Go somewhere</a>
-          </div>
-        </div>
+        onSwipeUp={() => console.log('swipe up')}
+        onSwipeDown={() => console.log('swipe down')}>
+        <EventCard name={ item } />
       </Card>
     ));
   }
 
-  render() {
+  renderContent() {
     const data = ['Alexandre', 'Thomas', 'Lucien'];
 
-    return (
-      <div className="App">
-        <p className="App-intro">
-          <button className="btn btn-primary" onClick={this.feelingLucky}>"I'm feeeeling lukcy!"</button>
-        </p>
-        <p> Lat: {this.state.lat}</p>
-        <p> Long: {this.state.long}</p>
-        <p> GeoHAsh: {this.state.hash}</p>
-
+    if (this.isUserLoggedIn()) {
+      return (
         <Cards onEnd={() => console.log('end')} className='master-root'>
           {this.renderCards(data)}
         </Cards>
+      );
+    }
+
+    return (
+      <div className="feelingLuckyButton mt-5">
+        <RaisedButton
+          label="I'm Feeling Lucky"
+          secondary={ true }
+          onClick={ this.feelingLucky } />
+      </div>
+    );
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <Header
+          isLoggedIn={ this.isUserLoggedIn() }
+          onLogout={ this.logout } />
+        { this.renderContent() }
       </div>
     );
   }
