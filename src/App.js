@@ -8,7 +8,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Cards, { Card } from 'react-swipe-card';
 import moment from 'moment';
 
-const reportSwipe = payload => fetch('http://get-me-indr-backend.herokuapp.com/interactions', { method: "POST", body: JSON.stringify(payload) });
+const reportSwipe = payload => fetch('https://get-me-indr-backend.herokuapp.com/interactions', { method: "POST", body: JSON.stringify(payload) });
 
 class App extends Component {
 
@@ -73,7 +73,7 @@ constructor(){
         .map(k => esc(k) + '=' + esc(params[k]))
         .join('&');
 
-    fetch('http://get-me-indr-backend.herokuapp.com?'+query, params)
+    fetch('https://get-me-indr-backend.herokuapp.com?'+query, params)
         .then(response => {
           this.setState({ loading: false });
             if (response.status >= 400) {
