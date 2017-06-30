@@ -73,6 +73,13 @@ constructor(){
         .map(k => esc(k) + '=' + esc(params[k]))
         .join('&');
 
+    var myHeaders = new Headers();
+     myHeaders.append('Access-Control-Allow-Origin', '*');
+
+      params.headers = myHeaders;
+      params.mode = 'cors';
+      params.cache = 'default';
+      console.log(params);
     fetch('http://get-me-indr-backend.herokuapp.com?'+query, params)
         .then(response => {
           this.setState({ loading: false });
