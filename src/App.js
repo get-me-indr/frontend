@@ -6,6 +6,7 @@ import Header from './components/header';
 import EventCard from './components/event-card';
 import RaisedButton from 'material-ui/RaisedButton';
 import Cards, { Card } from 'react-swipe-card';
+import moment from 'moment';
 
 class App extends Component {
 
@@ -23,7 +24,8 @@ constructor(){
       geohash: '',
       user: {
         status: 'not_connected'
-      }
+      },
+      cardData:{}
     };
   }
 
@@ -57,13 +59,38 @@ constructor(){
   }
 
   success(pos) {
+
     let crd = pos.coords;
 
-    let hashCode = GeoHash.encode(crd.latitude,crd.longitude);
+    let hashCode = GeoHash.encode(crd.latitude,crd.longitude,9);
     this.setState({lat:crd.latitude, long:crd.longitude,hash:hashCode});
     console.log(hashCode);
     console.log('i succeed' + this.state.lat + this.state.long );
     console.log('i succeed' + crd.latitude + crd.longitude );
+    let self = this;
+    fetch('http://localhost:3000/discovery?geoPoint=' + hashCode + '&artists=Colorado%20Rockies%20vs.%20Cincinnati%20Reds,Madonna,The%20Cranberries,Michael%20Jackson')
+        .then(function(response) {
+            if (response.status >= 400) {
+                throw new Error("Bad response from server");
+            }
+            return response.json();
+        })
+        .then(function(discoveryData) {
+            console.log(discoveryData);
+            let cardList = [];
+
+            for(let evt of discoveryData.events){
+                let card = {};
+                card.title = evt.eventName;
+                card.distance = evt.distance + ' mi';
+                card.url = evt.url;
+                card.location = evt.venueName + ', ' +  evt.venueCity + ', ' + evt.venueState.stateCode;
+                card.dateTime = moment(evt.startLocalDate).format('dddd, MMM Do') + ' @ ' + moment(evt.startLocalDate+'T'+evt.startLocalTime).format('hA');
+                card.img = evt.imageUrl;
+                cardList.push(card);
+            }
+            self.setState({cardData: cardList});
+        });
   }
 
   error() {
@@ -84,9 +111,13 @@ constructor(){
         key={item}
         onSwipeLeft={() => console.log('swipe left')}
         onSwipeRight={() => console.log('swipe right')}
-        onSwipeTop={() => console.log('swipe top')}
+        onSwipeTop={() => window.location = item.url}
         onSwipeBottom={() => console.log('swipe bottom')}>
-        <EventCard name={ item } />
+        <EventCard name={ item.title }
+         subtitle = {item.location}
+         image = {item.img}
+         dateTime = {item.dateTime }
+         distance = {item.distance}/>
       </Card>
     ));
   }
@@ -97,7 +128,7 @@ constructor(){
     if (this.isUserLoggedIn()) {
       return (
         <Cards onEnd={() => console.log('end')} className='master-root'>
-          {this.renderCards(data)}
+          {this.renderCards(this.state.cardData)}
         </Cards>
       );
     }
