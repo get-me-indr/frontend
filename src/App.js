@@ -146,7 +146,7 @@ constructor(){
     const data = ['Alexandre', 'Thomas', 'Lucien'];
 
     if (this.isUserLoggedIn()) {
-      if (this.state.) {
+      if (this.state.redirecting) {
         return <div>Please wait while we take you to an event you'll love!</div>
       } else if (this.state.loading) {
         return <div>loading...</div>
