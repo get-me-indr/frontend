@@ -8,7 +8,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Cards, { Card } from 'react-swipe-card';
 import moment from 'moment';
 
-const reportSwipe = payload => fetch('http://get-me-indr-backend.herokuapp.com/interactions', { method: "POST", body: JSON.stringify(payload) });
+const reportSwipe = payload => fetch('https://get-me-indr-backend.herokuapp.com/interactions', { method: "POST", body: JSON.stringify(payload) });
 
 class App extends Component {
 
@@ -73,6 +73,7 @@ constructor(){
         .map(k => esc(k) + '=' + esc(params[k]))
         .join('&');
 
+<<<<<<< HEAD
     var myHeaders = new Headers();
      myHeaders.append('Access-Control-Allow-Origin', '*');
 
@@ -81,6 +82,9 @@ constructor(){
       params.cache = 'default';
       console.log(params);
     fetch('http://get-me-indr-backend.herokuapp.com?'+query, params)
+=======
+    fetch('https://get-me-indr-backend.herokuapp.com?'+query, params)
+>>>>>>> 14c2bbd9176a0d2256e842f9de467503be222c1f
         .then(response => {
           this.setState({ loading: false });
             if (response.status >= 400) {
