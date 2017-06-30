@@ -8,6 +8,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Cards, { Card } from 'react-swipe-card';
 import moment from 'moment';
 
+const reportSwipe = payload => fetch('http://get-me-indr-backend.herokuapp.com/interactions', { method: "POST", body: JSON.stringify(payload) });
+
 class App extends Component {
 
 constructor(){
@@ -22,10 +24,11 @@ constructor(){
       lat: 0,
       long: 0,
       geohash: '',
+      loading: true,
       user: {
         status: 'not_connected'
       },
-      cardData:{}
+      cardData:[]
     };
   }
 
@@ -51,11 +54,39 @@ constructor(){
 
   onLoginSuccess(user) {
     this.setState({ user });
+    this.start();
   }
 
   isUserLoggedIn() {
     const { user } = this.state;
     return user.status === 'connected';
+    this.start();
+  }
+
+  start() {
+    const { user: { tmToken, tmUserId, fbUserId, fbToken }, hash:location } = this.state;
+    const params = { tmToken, tmUserId, fbUserId, fbToken, location };
+    const esc = encodeURIComponent;
+    const query = Object.keys(params)
+        .map(k => esc(k) + '=' + esc(params[k]))
+        .join('&');
+
+    fetch('http://get-me-indr-backend.herokuapp.com?'+query, params)
+        .then(response => {
+            if (response.status >= 400) {
+                throw new Error("Bad response from server");
+            }
+            return response.json();
+        })
+        .then(data => {
+            const cardData = data.events.map(evt => ({
+              title: evt.eventName,
+              url: evt.eventUrl || evt.url || '#',
+              img: evt.imageUrl
+            }));
+
+            this.setState({ cardData, loading: false });
+        });
   }
 
   success(pos) {
@@ -67,38 +98,6 @@ constructor(){
     console.log(hashCode);
     console.log('i succeed' + this.state.lat + this.state.long );
     console.log('i succeed' + crd.latitude + crd.longitude );
-    let self = this;
-    var myHeaders = new Headers();
-     myHeaders.append('Access-Control-Allow-Origin', '*');
-    fetch('http://get-me-indr-backend.herokuapp.com/discovery?geoPoint=' + hashCode + '&artists=Colorado%20Rockies%20vs.%20Cincinnati%20Reds,Madonna,The%20Cranberries,Michael%20Jackson',
-    {
-        headers: myHeaders,
-        mode: 'cors',
-        cache: 'default'
-     })
-        .then(function(response) {
-            if (response.status >= 400) {
-                throw new Error("Bad response from server");
-                console.log("hello");
-            }
-            return response.json();
-        })
-        .then(function(discoveryData) {
-            console.log(discoveryData);
-            let cardList = [];
-
-            for(let evt of discoveryData.events){
-                let card = {};
-                card.title = evt.eventName;
-                card.distance = evt.distance + ' mi';
-                card.url = evt.url;
-                card.location = evt.venueName + ', ' +  evt.venueCity + ', ' + evt.venueState.stateCode;
-                card.dateTime = moment(evt.startLocalDate).format('dddd, MMM Do') + ' @ ' + moment(evt.startLocalDate+'T'+evt.startLocalTime).format('hA');
-                card.img = evt.imageUrl;
-                cardList.push(card);
-            }
-            self.setState({cardData: cardList});
-        });
   }
 
   error() {
@@ -114,20 +113,28 @@ constructor(){
   }
 
   renderCards(data) {
+    const { tmUserId } = this.state.user;
     return data.map((item) => (
       <Card
         key={item}
-        onSwipeLeft={() => console.log('swipe left')}
-        onSwipeRight={() => console.log('swipe right')}
-        onSwipeTop={() => window.location = item.url}
-        onSwipeBottom={() => console.log('swipe bottom')}>
+        onSwipeLeft={() => {
+          reportSwipe({ direction: 'left', event: item, tmUserId });
+        }}
+        onSwipeRight={() => {
+          reportSwipe({ direction: 'right', event: item, tmUserId });
+        }}
+        onSwipeTop={() => {
+          reportSwipe({ direction: 'up', event: item, tmUserId });
+          window.location = item.url
+        }}
+        onSwipeBottom={() => {
+          reportSwipe({ direction: 'left', event: item, tmUserId });
+        }}>
         <EventCard name={ item.title }
          subtitle = {item.location}
          image = {item.img}
          dateTime = {item.dateTime }
-         distance = {item.distance}
-         url = {item.url}/>
-
+         distance = {item.distance}/>
       </Card>
     ));
   }
@@ -136,6 +143,9 @@ constructor(){
     const data = ['Alexandre', 'Thomas', 'Lucien'];
 
     if (this.isUserLoggedIn()) {
+      if (this.state.loading) {
+        return <div>loading...</div>
+      }
       return (
         <Cards onEnd={() => console.log('end')} className='master-root'>
           {this.renderCards(this.state.cardData)}
