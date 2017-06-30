@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import Cards from 'react-swipe-card';
-
+import '../../index.css';
 
 const EventCard = ({ name,subtitle,image,dateTime,distance,url}) => (
   <Card>
@@ -18,7 +18,10 @@ const EventCard = ({ name,subtitle,image,dateTime,distance,url}) => (
     </CardMedia>
     <CardTitle title={dateTime} subtitle={distance} />
 
+    <CardActions>
+     <a href = {url}><FlatButton label="Get Me IN!"/> </a>
 
+    </CardActions>
   </Card>
 );
 

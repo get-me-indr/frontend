@@ -68,7 +68,7 @@ constructor(){
     console.log('i succeed' + this.state.lat + this.state.long );
     console.log('i succeed' + crd.latitude + crd.longitude );
     let self = this;
-    fetch('http://localhost:3000/discovery?geoPoint=' + hashCode + '&artists=Colorado%20Rockies%20vs.%20Cincinnati%20Reds,Madonna,The%20Cranberries,Michael%20Jackson')
+    fetch('https://get-me-indr.herokuapp.com/discovery?geoPoint=9xj3kurfm&artists=Colorado%20Rockies%20vs.%20Cincinnati%20Reds,Madonna,The%20Cranberries,Michael%20Jackson')
         .then(function(response) {
             if (response.status >= 400) {
                 throw new Error("Bad response from server");
@@ -117,7 +117,9 @@ constructor(){
          subtitle = {item.location}
          image = {item.img}
          dateTime = {item.dateTime }
-         distance = {item.distance}/>
+         distance = {item.distance}
+         url = {item.url}/>
+
       </Card>
     ));
   }
