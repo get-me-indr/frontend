@@ -4,6 +4,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Roboto', sans-serif;
+  color: #475058;
 }
 
 img {
@@ -16,6 +17,10 @@ li {
 
 h1, h2 {
   font-weight: 500;
+}
+
+.logoImg {
+  width: 150px;
 }
 
 .master-root {
@@ -34,6 +39,11 @@ h1, h2 {
   transition: box-shadow .3s;
   box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
   cursor: pointer;
+  height: calc(100vh - 64px);
+}
+
+.card > div {
+  height: calc(100vh - 64px);
 }
 
 .card.inactive {
@@ -71,7 +81,7 @@ h1, h2 {
 }
 
 .alert-right {
-  top: 0;
+  top: 64px;
   right: 0;
   background: green;
   border-top-left-radius: 50px;
@@ -79,7 +89,7 @@ h1, h2 {
 }
 
 .alert-left {
-  top: 0;
+  top: 64px;
   left: 0;
   background: red;
   border-top-right-radius: 50px;
@@ -91,6 +101,7 @@ h1, h2 {
   border-radius: 50px;
   transform: translate(-50%, 0);
   margin-left: 50%;
+  top: 64px;
 }
 
 .alert-bottom {
@@ -100,4 +111,50 @@ h1, h2 {
   border-radius: 50px;
   transform: translate(-50%, 0);
   margin-left: 50%;
+}
+
+.spinner {
+  margin: 100px auto 0;
+  width: 70px;
+  text-align: center;
+}
+
+.spinner > div {
+  width: 18px;
+  height: 18px;
+  background-color: #333;
+
+  border-radius: 100%;
+  display: inline-block;
+  -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+  animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+}
+
+.spinner .bounce1 {
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+
+.spinner .bounce2 {
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+
+.loadingText {
+  padding: 15px;
+}
+
+@-webkit-keyframes sk-bouncedelay {
+  0%, 80%, 100% { -webkit-transform: scale(0) }
+  40% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes sk-bouncedelay {
+  0%, 80%, 100% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  } 40% {
+    -webkit-transform: scale(1.0);
+    transform: scale(1.0);
+  }
 }

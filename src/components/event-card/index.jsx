@@ -1,36 +1,62 @@
 import React, { PropTypes } from 'react';
 import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
-import Cards from 'react-swipe-card';
-import '../../index.css';
 
-const EventCard = ({ name,subtitle,image,dateTime,distance,url}) => (
-  <Card>
-    <CardHeader
-      title={ name }
-      subtitle={ subtitle }
-      avatar="https://unsplash.it/128/128/?random"
-    />
-    <CardMedia
-      overlay={<CardTitle title={ name } subtitle={ subtitle } />}
-    >
-      <img src={image} alt="" />
-    </CardMedia>
-    <CardTitle title={dateTime} subtitle={distance} />
-
-    <CardActions>
-     <a href = {url}><FlatButton label="Get Me IN!"/> </a>
-
-    </CardActions>
-  </Card>
-);
+const EventCard = ({
+  title,
+  url,
+  img,
+  displayName,
+  profilePic,
+  venueName,
+  venueCity,
+  startLocalDate
+}) => {
+  const openEDP = () => window.open(url);
+  const profilePicUrl = profilePic ? profilePic : 'https://unsplash.it/500/300/?random';
+  const imageUrl = img ? img : 'https://unsplash.it/500/300/?random';
+  return (
+    <Card>
+      <CardHeader
+        title={ displayName }
+        subtitle="Recommended for you"
+        avatar={ profilePic }
+      />
+      <CardMedia>
+        <img src={ imageUrl } alt="" />
+      </CardMedia>
+      <CardTitle title={ title } />
+      <CardText>
+        { venueName || venueCity ?
+          <div>{ venueName } { venueCity ? `, ${venueCity}` : null }</div>
+          : null
+        }
+        { startLocalDate ? <div>{ startLocalDate }</div> : null }
+      </CardText>
+      <CardActions>
+        <FlatButton label="Buy Now" onClick={ openEDP } />
+      </CardActions>
+    </Card>
+  );
+};
 
 EventCard.propTypes = {
-  name: PropTypes.string
+  name: PropTypes.string,
+  url: PropTypes.string,
+  img: PropTypes.string,
+  displayName: PropTypes.string,
+  profilePic: PropTypes.string
 };
 
 EventCard.defaultProps = {
-  name: ''
+  name: null,
+  url: null,
+  img: null,
+  displayName: null,
+  profilePic: null,
+  venueName: null,
+  venueCity: null,
+  startLocalDate: null
 };
 
 export default EventCard;
