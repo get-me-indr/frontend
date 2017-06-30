@@ -73,6 +73,7 @@ constructor(){
 
     fetch('http://get-me-indr-backend.herokuapp.com?'+query, params)
         .then(response => {
+          this.setState({ cardData, loading: false });
             if (response.status >= 400) {
                 throw new Error("Bad response from server");
             }
@@ -84,8 +85,6 @@ constructor(){
               url: evt.eventUrl || evt.url || '#',
               img: evt.imageUrl
             }));
-
-            this.setState({ cardData, loading: false });
         });
   }
 
