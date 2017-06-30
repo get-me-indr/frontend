@@ -84,8 +84,8 @@ constructor(){
         key={item}
         onSwipeLeft={() => console.log('swipe left')}
         onSwipeRight={() => console.log('swipe right')}
-        onSwipeUp={() => console.log('swipe up')}
-        onSwipeDown={() => console.log('swipe down')}>
+        onSwipeTop={() => console.log('swipe top')}
+        onSwipeBottom={() => console.log('swipe bottom')}>
         <EventCard name={ item } />
       </Card>
     ));
