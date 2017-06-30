@@ -4,6 +4,7 @@ import './App.css';
 import GeoHash from 'latlon-geohash';
 import Header from './components/header';
 import EventCard from './components/event-card';
+import Loading from './components/loading';
 import RaisedButton from 'material-ui/RaisedButton';
 import Cards, { Card } from 'react-swipe-card';
 import moment from 'moment';
@@ -17,6 +18,7 @@ constructor(){
     this.success = this.success.bind(this);
     this.feelingLucky = this.feelingLucky.bind(this);
     this.login = this.login.bind(this);
+    this.checkLoginStatus = this.checkLoginStatus.bind(this);
     this.logout = this.logout.bind(this);
     this.onLoginSuccess = this.onLoginSuccess.bind(this);
 
@@ -24,7 +26,7 @@ constructor(){
       lat: 0,
       long: 0,
       geohash: '',
-      loading: true,
+      loading: false,
       redirecting: false,
       user: {
         status: 'not_connected'
@@ -34,6 +36,8 @@ constructor(){
   }
 
   feelingLucky() {
+    this.setState({ loading: true });
+
     window.TMIdentity.init({
         serverUrl: 'https://identity.ticketmaster.com',
         flags: {
@@ -43,9 +47,23 @@ constructor(){
       .then(this.login);
   }
 
+  checkLoginStatus() {
+    window.TMIdentity.getLoginStatus()
+      .then(resp => {
+        if (resp.status && resp.status === 'connected') {
+          this.onLoginSuccess(resp);
+          return;
+        }
+
+        this.login();
+      })
+      .catch(() => this.setState({ loading: false }))
+  }
+
   login() {
     window.TMIdentity.login()
       .then(this.onLoginSuccess)
+      .catch(() => this.setState({ loading: false }))
   }
 
   logout() {
@@ -65,7 +83,7 @@ constructor(){
   }
 
   start() {
-    console.log('this.state', this.state);
+    this.setState({ loading: true });
     const { user: { tmToken, tmUserId, fbUserId, fbToken } } = this.state;
     const params = { tmToken, tmUserId, fbUserId, fbToken };
     const esc = encodeURIComponent;
@@ -92,10 +110,20 @@ constructor(){
             const cardData = data.events.map(evt => ({
               title: evt.eventName,
               url: evt.eventUrl || evt.url || '#',
-              img: evt.imageUrl
+              img: evt.imageUrl,
+              venueName: evt.venueName || '',
+              venueCity: evt.venueCity || '',
+              startLocalDate: evt.startLocalDate
             }));
+
+            cardData.push({
+              title: 'Test Event',
+              url: 'Whatever',
+              img: 'evt.imageUrl'
+            });
             this.setState({ cardData })
-        });
+        })
+        .catch(() => this.setState({ loading: false }));
   }
 
   success(pos) {
@@ -122,7 +150,7 @@ constructor(){
   }
 
   renderCards(data) {
-    const { tmUserId } = this.state.user;
+    const { tmUserId, userInfo } = this.state.user;
     return data ? data.map((item) => (
       <Card
         key={item}
@@ -140,27 +168,35 @@ constructor(){
         onSwipeBottom={() => {
           reportSwipe({ direction: 'left', event: item, tmUserId });
         }}>
-        <EventCard name={ item.title }
-         subtitle = {item.location}
-         image = {item.img}
-         dateTime = {item.dateTime }
-         distance = {item.distance}/>
+        <EventCard
+          title={ item.title }
+          url = {item.url}
+          img = {item.img}
+          venueName = {item.venueName}
+          venueCity = {item.venueCity}
+          startLocalDate = {item.startLocalDate}
+          displayName={ userInfo.user.displayName }
+          profilePic={ userInfo.user.pictureUrl } />
       </Card>
     )) : [];
   }
 
   renderContent() {
+    const { redirecting, loading, cardData } = this.state;
     const data = ['Alexandre', 'Thomas', 'Lucien'];
 
+    if (loading) {
+      return <Loading text="Loading..." />
+    }
+
     if (this.isUserLoggedIn()) {
-      if (this.state.redirecting) {
-        return <div>Please wait while we take you to an event you'll love!</div>
-      } else if (this.state.loading) {
-        return <div>loading...</div>
+      if (redirecting) {
+        return <Loading text="Please wait while we take you to an event you'll love!" />
       }
+
       return (
         <Cards onEnd={() => console.log('end')} className='master-root'>
-          {this.renderCards(this.state.cardData)}
+          {this.renderCards(cardData)}
         </Cards>
       );
     }
@@ -180,7 +216,8 @@ constructor(){
       <div className="App">
         <Header
           isLoggedIn={ this.isUserLoggedIn() }
-          onLogout={ this.logout } />
+          onLogout={ this.logout }
+          onLogin={ this.feelingLucky } />
         { this.renderContent() }
       </div>
     );
