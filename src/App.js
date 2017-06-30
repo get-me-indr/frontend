@@ -25,6 +25,7 @@ constructor(){
       long: 0,
       geohash: '',
       loading: true,
+      redirecting: false,
       user: {
         status: 'not_connected'
       },
@@ -125,7 +126,7 @@ constructor(){
           reportSwipe({ direction: 'right', event: item, tmUserId });
         }}
         onSwipeTop={() => {
-          this.setState({ loading: true });
+          this.setState({ redirecting: true });
           reportSwipe({ direction: 'up', event: item, tmUserId });
           window.location = item.url
         }}
@@ -145,7 +146,9 @@ constructor(){
     const data = ['Alexandre', 'Thomas', 'Lucien'];
 
     if (this.isUserLoggedIn()) {
-      if (this.state.loading) {
+      if (this.state.) {
+        return <div>Please wait while we take you to an event you'll love!</div>
+      } else if (this.state.loading) {
         return <div>loading...</div>
       }
       return (
