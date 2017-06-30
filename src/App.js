@@ -9,7 +9,14 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Cards, { Card } from 'react-swipe-card';
 import moment from 'moment';
 
-const reportSwipe = payload => fetch('https://get-me-indr-backend.herokuapp.com/interactions', { method: "POST", body: JSON.stringify(payload) });
+const reportSwipe = payload => fetch('https://get-me-indr-backend.herokuapp.com/interactions', {
+  method: "POST",
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(payload)
+});
 
 class App extends Component {
 
